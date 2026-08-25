@@ -1,0 +1,101 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --- NextAuth required models ---
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // null for OAuth-only users
+  accounts      Account[]
+  sessions      Session[]
+  projects      Project[]
+  skillProfile  SkillProfile?
+  createdAt     DateTime  @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// --- Core domain models ---
+model Project {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  name          String
+  constraints   Json     // { throughput, regions, budget }
+  designGraph   Json     // React Flow nodes/edges
+  status        String   @default("designing") // designing | simulating | live | completed
+  simResults    Json?
+  pullRequests  PullRequest[]
+  sprintLog     Json[]   @default([])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PullRequest {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  title       String
+  description String
+  diff        String   // unified diff text
+  hasBug      Boolean
+  bugType     String?  // "race_condition" | "n_plus_1" | "missing_index" | "unbounded_retry" | null
+  bugLocation Json?    // { file, lineStart, lineEnd }
+  status      String   @default("pending") // pending | approved | rejected
+  review      Review?
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id             String      @id @default(cuid())
+  pullRequestId  String      @unique
+  pullRequest    PullRequest @relation(fields: [pullRequestId], references: [id])
+  comments       Json[]      // [{ line, text }]
+  decision       String      // approved | changes_requested
+  caughtBug      Boolean     // did a comment land on the bug's actual location
+  llmFeedback    String?
+  createdAt      DateTime    @default(now())
+}
+
+model SkillProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  designScore    Float    @default(0)
+  reviewScore    Float    @default(0)
+  historyPoints  Json[]   @default([]) // [{ date, designScore, reviewScore }]
+  weakCategories Json     @default("{}") // { "race_condition": 0.4, ... } lower = weaker
+  updatedAt      DateTime @updatedAt
+}
