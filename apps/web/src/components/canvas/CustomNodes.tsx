@@ -10,11 +10,11 @@ export const GatewayNode = memo(({ data }: { data: { label: string; rps?: number
       <Handle type="target" position={Position.Left} className="!bg-white" />
       <div className="flex items-center gap-2 border-b border-white/20 pb-2">
         <Globe className="h-4 w-4 text-white" />
-        <span className="font-mono text-xs font-bold uppercase tracking-wider">Gateway</span>
+        <span className="text-xs font-bold uppercase tracking-wider">🌐 Gateway</span>
       </div>
       <div className="mt-2">
         <p className="text-xs font-semibold text-white">{data.label}</p>
-        <p className="font-mono text-[10px] text-neutral-400">Cap: {data.rps || 5000} req/s</p>
+        <p className="text-[10px] text-neutral-400">Handles {data.rps || 5000}/sec requests</p>
       </div>
       <Handle type="source" position={Position.Right} className="!bg-white" />
     </div>
@@ -28,11 +28,11 @@ export const ServiceNode = memo(({ data }: { data: { label: string; instances?: 
       <Handle type="target" position={Position.Left} className="!bg-white" />
       <div className="flex items-center gap-2 border-b border-white/20 pb-2">
         <Server className="h-4 w-4 text-white" />
-        <span className="font-mono text-xs font-bold uppercase tracking-wider">Service</span>
+        <span className="text-xs font-bold uppercase tracking-wider">🖥️ Service</span>
       </div>
       <div className="mt-2">
         <p className="text-xs font-semibold text-white">{data.label}</p>
-        <p className="font-mono text-[10px] text-neutral-400">Replicas: {data.instances || 2} nodes</p>
+        <p className="text-[10px] text-neutral-400">{data.instances || 2} copies running</p>
       </div>
       <Handle type="source" position={Position.Right} className="!bg-white" />
     </div>
@@ -46,11 +46,11 @@ export const DbNode = memo(({ data }: { data: { label: string; replica?: boolean
       <Handle type="target" position={Position.Left} className="!bg-white" />
       <div className="flex items-center gap-2 border-b border-white/20 pb-2">
         <Database className="h-4 w-4 text-white" />
-        <span className="font-mono text-xs font-bold uppercase tracking-wider">Storage</span>
+        <span className="text-xs font-bold uppercase tracking-wider">🗄️ Database</span>
       </div>
       <div className="mt-2">
         <p className="text-xs font-semibold text-white">{data.label}</p>
-        <p className="font-mono text-[10px] text-neutral-400">PostgreSQL {data.replica ? "(Read/Write Pool)" : ""}</p>
+        <p className="text-[10px] text-neutral-400">PostgreSQL{data.replica ? " (with backup)" : ""}</p>
       </div>
       <Handle type="source" position={Position.Right} className="!bg-white" />
     </div>
@@ -64,11 +64,11 @@ export const CacheNode = memo(({ data }: { data: { label: string; memory?: strin
       <Handle type="target" position={Position.Left} className="!bg-white" />
       <div className="flex items-center gap-2 border-b border-white/20 pb-2">
         <Zap className="h-4 w-4 text-white" />
-        <span className="font-mono text-xs font-bold uppercase tracking-wider">In-Memory Cache</span>
+        <span className="text-xs font-bold uppercase tracking-wider">⚡ Speed Cache</span>
       </div>
       <div className="mt-2">
         <p className="text-xs font-semibold text-white">{data.label}</p>
-        <p className="font-mono text-[10px] text-neutral-400">Alloc: {data.memory || "8GB"} LRU</p>
+        <p className="text-[10px] text-neutral-400">Memory: {data.memory || "8GB"}</p>
       </div>
       <Handle type="source" position={Position.Right} className="!bg-white" />
     </div>
@@ -82,11 +82,11 @@ export const QueueNode = memo(({ data }: { data: { label: string } }) => {
       <Handle type="target" position={Position.Left} className="!bg-white" />
       <div className="flex items-center gap-2 border-b border-white/20 pb-2">
         <Layers className="h-4 w-4 text-white" />
-        <span className="font-mono text-xs font-bold uppercase tracking-wider">Message Queue</span>
+        <span className="text-xs font-bold uppercase tracking-wider">📦 Task Queue</span>
       </div>
       <div className="mt-2">
         <p className="text-xs font-semibold text-white">{data.label}</p>
-        <p className="font-mono text-[10px] text-neutral-400">Kafka Stream Broker</p>
+        <p className="text-[10px] text-neutral-400">Background task pipeline</p>
       </div>
       <Handle type="source" position={Position.Right} className="!bg-white" />
     </div>

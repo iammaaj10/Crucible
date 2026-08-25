@@ -43,14 +43,14 @@ function LoginForm() {
   return (
     <div className="space-y-6">
       {registered && (
-        <div className="rounded border border-white/20 bg-neutral-900 px-3.5 py-2.5 text-xs font-mono text-white">
-          [STATUS: ACCOUNT_CREATED] Sign in to access your workspace.
+        <div className="rounded border border-white/20 bg-neutral-900 px-3.5 py-2.5 text-xs text-white">
+          ✅ Account created successfully! Sign in below to get started.
         </div>
       )}
 
       {error && (
-        <div className="rounded border border-white/20 bg-neutral-900 px-3.5 py-2.5 text-xs font-mono text-neutral-300">
-          [ERROR] {error}
+        <div className="rounded border border-white/20 bg-neutral-900 px-3.5 py-2.5 text-xs text-neutral-300">
+          ⚠️ {error}
         </div>
       )}
 
@@ -128,7 +128,7 @@ function LoginForm() {
           disabled={loading}
           className="w-full rounded border border-white bg-white py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-black transition-all hover:bg-neutral-200 active:scale-[0.99] disabled:opacity-50"
         >
-          {loading ? "AUTHENTICATING..." : "Sign In with Email"}
+          {loading ? "Signing in..." : "Sign in"}
         </button>
       </form>
     </div>
@@ -148,11 +148,11 @@ export default function LoginPage() {
           <div className="mb-6">
             <h1 className="text-xl font-bold tracking-tight text-white">Sign In</h1>
             <p className="mt-1 text-xs text-neutral-400">
-              Access your simulation workspaces and logs.
+              Welcome back to Crucible
             </p>
           </div>
 
-          <Suspense fallback={<div className="text-xs font-mono text-neutral-500">INITIALIZING...</div>}>
+          <Suspense fallback={<div className="text-xs text-neutral-500">Loading...</div>}>
             <LoginForm />
           </Suspense>
         </div>

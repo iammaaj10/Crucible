@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, PenTool, GitPullRequest, AlertTriangle, Star, LogOut } from "lucide-react";
+import { LayoutDashboard, PenTool, GitPullRequest, AlertTriangle, Star, LogOut, Zap, BookOpen, Trophy, Settings } from "lucide-react";
 
 interface AppHeaderProps {
   userEmail?: string | null;
@@ -41,9 +41,27 @@ export function AppHeader({ userEmail, userName, projectId, prId }: AppHeaderPro
       icon: AlertTriangle,
     },
     {
+      href: "/challenges",
+      label: "Challenges",
+      tooltip: "Bite-sized quizzes",
+      icon: Zap,
+    },
+    {
+      href: "/learn",
+      label: "Learn",
+      tooltip: "Engineering dictionary",
+      icon: BookOpen,
+    },
+    {
+      href: "/leaderboard",
+      label: "Leaderboard",
+      tooltip: "Top student rankings",
+      icon: Trophy,
+    },
+    {
       href: "/profile",
-      label: "My Skills",
-      tooltip: "View your skill scores",
+      label: "My Profile",
+      tooltip: "View your skill scores and badges",
       icon: Star,
     },
   ];
@@ -91,6 +109,13 @@ export function AppHeader({ userEmail, userName, projectId, prId }: AppHeaderPro
           <span className="h-1.5 w-1.5 rounded-full bg-white" />
           <span className="max-w-[120px] truncate">{userName || userEmail}</span>
         </div>
+        <Link
+          href="/settings"
+          title="Account Settings"
+          className="flex items-center justify-center rounded border border-white/20 bg-black p-1 text-neutral-400 transition-colors hover:border-white hover:text-white"
+        >
+          <Settings className="h-4 w-4" />
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
           title="Sign out of Crucible"

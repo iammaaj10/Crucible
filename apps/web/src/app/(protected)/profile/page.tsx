@@ -3,16 +3,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppHeader } from "@/components/navigation/AppHeader";
 import { Award, ShieldCheck, Activity, Terminal, TrendingUp } from "lucide-react";
-
-interface ReviewItem {
-  id: string;
-  decision: string;
-  caughtBug: boolean;
-  createdAt: Date;
-  pullRequest: {
-    title: string;
-  };
-}
+import { achievements } from "@/lib/constants/achievements";
+import type { ReviewItem } from "@/lib/types";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -30,9 +22,24 @@ export default async function ProfilePage() {
     orderBy: { createdAt: "desc" },
   })) as unknown as ReviewItem[];
 
-  const designScore = skillProfile?.designScore ?? 75;
-  const reviewScore = skillProfile?.reviewScore ?? 80;
-  const incidentScore = 88;
+  const projects = await prisma.project.findMany({
+    where: { userId: user.id },
+  });
+
+  const designScore = skillProfile?.designScore ?? 0;
+  const reviewScore = skillProfile?.reviewScore ?? 0;
+  const incidentScore: number = 88;
+  const bugsCaught = reviews.filter((r) => r.caughtBug).length;
+
+  // ─── Determine earned achievements ────────────────────────────
+  const earnedIds = new Set<string>();
+
+  if (reviews.length >= 1) earnedIds.add("first-blood");
+  if (projects.length >= 1) earnedIds.add("architect");
+  if (bugsCaught >= 3) earnedIds.add("bug-hunter");
+  if (designScore === 100 || reviewScore === 100 || incidentScore === 100) earnedIds.add("perfect-score");
+  if (projects.length >= 3) earnedIds.add("designer");
+  // first-responder, challenger, scholar — tracked client-side via localStorage
 
   const competencies = [
     {
@@ -91,8 +98,8 @@ export default async function ProfilePage() {
         <div className="mb-8 rounded border border-white/10 bg-neutral-950 p-5 text-sm leading-relaxed text-neutral-400">
           <p className="mb-1 font-bold text-white">📊 What is the Skill Matrix?</p>
           <p>
-            Every time you complete an exercise on Crucible, the platform automatically grades your decisions and 
-            updates your scores below. Think of it like a <strong className="text-white">report card for engineering skills</strong> — 
+            Every time you complete an exercise on Crucible, the platform automatically grades your decisions and
+            updates your scores below. Think of it like a <strong className="text-white">report card for engineering skills</strong> —
             the kind of skills that top companies like Google, Microsoft, and Stripe test for in interviews.
           </p>
         </div>
@@ -136,6 +143,38 @@ export default async function ProfilePage() {
             <p className="mt-2 text-[11px] text-neutral-400">
               How quickly and correctly you resolved the production outage scenario.
             </p>
+          </div>
+        </div>
+
+        {/* Achievements */}
+        <div className="mb-10 border border-white/10 bg-neutral-950 p-8">
+          <h2 className="mb-6 flex items-center gap-2 text-xs uppercase tracking-widest text-neutral-400">
+            🏅 Achievements
+            <span className="text-neutral-600">({earnedIds.size}/{achievements.length} unlocked)</span>
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {achievements.map((badge) => {
+              const isEarned = earnedIds.has(badge.id);
+              return (
+                <div
+                  key={badge.id}
+                  className={`rounded border p-4 text-center transition-all ${
+                    isEarned
+                      ? "border-white/20 bg-black"
+                      : "border-white/5 bg-neutral-900/50 opacity-40"
+                  }`}
+                >
+                  <p className="text-2xl">{badge.emoji}</p>
+                  <p className="mt-2 text-xs font-bold text-white">{badge.title}</p>
+                  <p className="mt-1 text-[10px] text-neutral-400">{badge.description}</p>
+                  {isEarned ? (
+                    <p className="mt-2 text-[9px] font-bold uppercase text-white">✓ Unlocked</p>
+                  ) : (
+                    <p className="mt-2 text-[9px] uppercase text-neutral-600">🔒 Locked</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -190,7 +229,7 @@ export default async function ProfilePage() {
                     <p className="font-semibold text-white">{r.pullRequest.title}</p>
                     <p className="mt-0.5 text-neutral-500">
                       Your decision:{" "}
-                      <span className="text-neutral-300 capitalize">{r.decision.replace("_", " ")}</span>
+                      <span className="capitalize text-neutral-300">{r.decision.replace("_", " ")}</span>
                       {" · "}
                       Bug caught:{" "}
                       <span className={r.caughtBug ? "font-bold text-white" : "text-neutral-400"}>

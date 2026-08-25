@@ -52,7 +52,7 @@ export default function SignupPage() {
           <div className="mb-6">
             <h1 className="text-xl font-bold tracking-tight text-white">Create Account</h1>
             <p className="mt-1 text-xs text-neutral-400">
-              Initialize your developer profile.
+              Join thousands of students learning real engineering skills.
             </p>
           </div>
 
@@ -93,8 +93,8 @@ export default function SignupPage() {
           </div>
 
           {error && (
-            <div className="mb-4 rounded border border-white/20 bg-neutral-900 px-3.5 py-2.5 text-xs font-mono text-neutral-300">
-              [ERROR] {error}
+            <div className="mb-4 rounded border border-white/20 bg-neutral-900 px-3.5 py-2.5 text-xs text-neutral-300">
+              ⚠️ {error}
             </div>
           )}
 
@@ -123,7 +123,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="engineer@company.com"
+                placeholder="your.email@gmail.com"
                 className="w-full rounded border border-white/15 bg-black px-3.5 py-2.5 text-xs text-white placeholder-neutral-600 outline-none transition-colors focus:border-white focus:ring-1 focus:ring-white"
               />
             </div>
@@ -148,7 +148,7 @@ export default function SignupPage() {
               disabled={loading}
               className="w-full rounded border border-white bg-white py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-black transition-all hover:bg-neutral-200 active:scale-[0.99] disabled:opacity-50"
             >
-              {loading ? "REGISTERING..." : "Create Account with Email"}
+              {loading ? "Creating account..." : "Create account"}
             </button>
           </form>
         </div>
