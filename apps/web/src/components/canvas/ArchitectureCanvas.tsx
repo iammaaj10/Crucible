@@ -117,67 +117,74 @@ export function ArchitectureCanvas({
 
   return (
     <div className="flex h-[calc(100vh-65px)] flex-col bg-black text-white selection:bg-white selection:text-black">
-      {/* Canvas Action Bar */}
-      <div className="flex items-center justify-between border-b border-white/10 bg-neutral-950 px-6 py-3">
-        {/* Node Adders */}
-        <div className="flex items-center gap-2">
-          <span className="mr-2 font-mono text-[10px] uppercase text-neutral-500">Insert Node:</span>
+      {/* Canvas Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-neutral-950 px-6 py-3">
+        {/* Node Palette — what can you add? */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-mono text-[10px] uppercase text-neutral-500 mr-1">Add a component:</span>
           <button
-            onClick={() => handleAddNode("gatewayNode", "API Gateway Ingress")}
-            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs font-mono text-white transition-colors hover:border-white hover:bg-neutral-900"
+            title="API Gateway — the front door of your app; handles all incoming requests"
+            onClick={() => handleAddNode("gatewayNode", "API Gateway (Entry Point)")}
+            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs text-white transition-colors hover:border-white hover:bg-neutral-900"
           >
-            <Plus className="h-3 w-3" /> +Gateway
+            <Plus className="h-3 w-3" /> 🌐 Gateway
           </button>
           <button
-            onClick={() => handleAddNode("serviceNode", "Microservice Worker")}
-            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs font-mono text-white transition-colors hover:border-white hover:bg-neutral-900"
+            title="Microservice — a backend server that handles a specific task (e.g. orders, payments)"
+            onClick={() => handleAddNode("serviceNode", "Microservice (Backend Worker)")}
+            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs text-white transition-colors hover:border-white hover:bg-neutral-900"
           >
-            <Plus className="h-3 w-3" /> +Service
+            <Plus className="h-3 w-3" /> 🖥️ Service
           </button>
           <button
-            onClick={() => handleAddNode("dbNode", "PostgreSQL Database")}
-            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs font-mono text-white transition-colors hover:border-white hover:bg-neutral-900"
+            title="Database — stores all your app data permanently (e.g. users, orders)"
+            onClick={() => handleAddNode("dbNode", "Database (PostgreSQL)")}
+            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs text-white transition-colors hover:border-white hover:bg-neutral-900"
           >
-            <Plus className="h-3 w-3" /> +Database
+            <Plus className="h-3 w-3" /> 🗄️ Database
           </button>
           <button
-            onClick={() => handleAddNode("cacheNode", "Redis Cache Cluster")}
-            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs font-mono text-white transition-colors hover:border-white hover:bg-neutral-900"
+            title="Cache — ultra-fast memory storage; stops the database from being overloaded"
+            onClick={() => handleAddNode("cacheNode", "Cache (Redis Speed Layer)")}
+            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs text-white transition-colors hover:border-white hover:bg-neutral-900"
           >
-            <Plus className="h-3 w-3" /> +Redis
+            <Plus className="h-3 w-3" /> ⚡ Cache
           </button>
           <button
-            onClick={() => handleAddNode("queueNode", "Kafka Message Queue")}
-            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs font-mono text-white transition-colors hover:border-white hover:bg-neutral-900"
+            title="Message Queue — a background task lane; lets services send each other work without waiting"
+            onClick={() => handleAddNode("queueNode", "Message Queue (Kafka)")}
+            className="flex items-center gap-1.5 rounded border border-white/20 bg-black px-2.5 py-1 text-xs text-white transition-colors hover:border-white hover:bg-neutral-900"
           >
-            <Plus className="h-3 w-3" /> +Queue
+            <Plus className="h-3 w-3" /> 📦 Queue
           </button>
         </div>
 
-        {/* Execution Actions */}
+        {/* Actions */}
         <div className="flex items-center gap-3">
           {saveStatus && (
-            <span className="font-mono text-xs text-neutral-400">[{saveStatus}]</span>
+            <span className="text-xs text-neutral-400">{saveStatus === "SAVED" ? "✓ Saved" : "Save failed"}</span>
           )}
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center gap-2 rounded border border-white/20 bg-black px-4 py-1.5 text-xs font-mono font-medium text-white transition-all hover:border-white hover:bg-neutral-900 disabled:opacity-50"
+            title="Save your current design so you don't lose your work"
+            className="flex items-center gap-2 rounded border border-white/20 bg-black px-4 py-1.5 text-xs font-medium text-white transition-all hover:border-white hover:bg-neutral-900 disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
-            {isSaving ? "Saving..." : "Save Topology"}
+            {isSaving ? "Saving..." : "Save Design"}
           </button>
           <button
             onClick={handleSimulate}
             disabled={isSimulating}
-            className="flex items-center gap-2 rounded bg-white px-4 py-1.5 text-xs font-mono font-bold uppercase text-black transition-all hover:bg-neutral-200 disabled:opacity-50"
+            title="Test your design: simulates thousands of users hitting your system at once"
+            className="flex items-center gap-2 rounded bg-white px-4 py-1.5 text-xs font-bold uppercase text-black transition-all hover:bg-neutral-200 disabled:opacity-50"
           >
             {isSimulating ? (
               <RefreshCw className="h-3.5 w-3.5 animate-spin" />
             ) : (
               <Play className="h-3.5 w-3.5 fill-black" />
             )}
-            {isSimulating ? "Simulating..." : "Run Load Benchmark"}
+            {isSimulating ? "Running Simulation..." : "▶ Run Simulation"}
           </button>
         </div>
       </div>
@@ -185,9 +192,9 @@ export function ArchitectureCanvas({
       {/* Main Canvas & Metrics Split */}
       <div className="relative flex flex-1 overflow-hidden">
         <div className="relative flex-1 bg-black">
-          {/* Quick Helper Tip for New Users */}
-          <div className="absolute top-4 left-4 z-10 rounded border border-white/15 bg-black/80 px-3.5 py-2 font-mono text-[11px] text-neutral-300 backdrop-blur pointer-events-none shadow-lg">
-            <span className="text-white font-bold">[CANVAS_CONTROLS]</span> Drag connection dots between nodes to wire services &bull; Click &ldquo;Run Load Benchmark&rdquo; to simulate load.
+          {/* Quick tip for new users */}
+          <div className="absolute top-4 left-4 z-10 rounded border border-white/15 bg-black/80 px-4 py-2.5 text-[11px] text-neutral-300 backdrop-blur pointer-events-none shadow-lg">
+            <span className="font-bold text-white">💡 Quick Tip:</span> Drag the <span className="text-white">small dots</span> on the edge of any node to connect it to another → then click <span className="text-white">▶ Run Simulation</span> to see how it performs.
           </div>
 
           <ReactFlow
@@ -214,60 +221,67 @@ export function ArchitectureCanvas({
           </ReactFlow>
         </div>
 
-        {/* Real-time Telemetry Metrics Drawer */}
-        <div className="w-80 border-l border-white/10 bg-neutral-950 p-6 font-mono text-xs overflow-y-auto">
+        {/* Simulation Results Panel */}
+        <div className="w-80 overflow-y-auto border-l border-white/10 bg-neutral-950 p-6 text-xs">
           <div className="flex items-center gap-2 border-b border-white/10 pb-3">
             <Activity className="h-4 w-4 text-white" />
-            <h3 className="font-bold uppercase tracking-wider text-white">Telemetry &amp; SLO</h3>
+            <h3 className="font-bold uppercase tracking-wider text-white">Simulation Results</h3>
           </div>
 
           {simResults ? (
             <div className="mt-6 space-y-6">
               <div>
-                <p className="text-[10px] text-neutral-500 uppercase">p99 Latency</p>
+                <p className="text-[10px] uppercase text-neutral-500">Response Time (Slowest 1% of users)</p>
                 <p className="mt-1 text-2xl font-bold text-white">
                   {simResults.p99Latency} <span className="text-xs font-normal text-neutral-400">ms</span>
                 </p>
-              </div>
-
-              <div>
-                <p className="text-[10px] text-neutral-500 uppercase">Throughput Achieved</p>
-                <p className="mt-1 text-2xl font-bold text-white">
-                  {simResults.throughputAchieved.toLocaleString()} <span className="text-xs font-normal text-neutral-400">req/s</span>
+                <p className="mt-1 text-[11px] text-neutral-500">
+                  {simResults.p99Latency < 100 ? "✅ Great — users won't notice any delay" : simResults.p99Latency < 500 ? "⚠️ Acceptable, but could be faster" : "❌ Too slow — users will get frustrated"}
                 </p>
               </div>
 
               <div>
-                <p className="text-[10px] text-neutral-500 uppercase">Synthetic Error Rate</p>
-                <p className="mt-1 text-2xl font-bold text-white">{simResults.errorRate}</p>
+                <p className="text-[10px] uppercase text-neutral-500">Requests Handled Per Second</p>
+                <p className="mt-1 text-2xl font-bold text-white">
+                  {simResults.throughputAchieved.toLocaleString()} <span className="text-xs font-normal text-neutral-400">req/s</span>
+                </p>
+                <p className="mt-1 text-[11px] text-neutral-500">How many users your system can handle simultaneously</p>
               </div>
 
               <div>
-                <p className="text-[10px] text-neutral-500 uppercase">Estimated Run Cost</p>
+                <p className="text-[10px] uppercase text-neutral-500">Error Rate (Requests that failed)</p>
+                <p className="mt-1 text-2xl font-bold text-white">{simResults.errorRate}</p>
+                <p className="mt-1 text-[11px] text-neutral-500">Anything below 0.1% is generally acceptable</p>
+              </div>
+
+              <div>
+                <p className="text-[10px] uppercase text-neutral-500">Estimated Monthly Cloud Cost</p>
                 <p className="mt-1 text-xl font-bold text-white">{simResults.estimatedCost}</p>
+                <p className="mt-1 text-[11px] text-neutral-500">AWS / GCP pricing for this architecture</p>
               </div>
 
               <div className="border-t border-white/10 pt-4">
-                <p className="text-[10px] text-neutral-500 uppercase mb-2">Topology Bottlenecks</p>
+                <p className="mb-2 text-[10px] uppercase text-neutral-500">⚠️ Problems Found</p>
                 {simResults.bottlenecks && simResults.bottlenecks.length > 0 ? (
                   <div className="space-y-2">
                     {simResults.bottlenecks.map((b, idx) => (
-                      <div key={idx} className="flex items-start gap-2 rounded border border-white/15 bg-black p-2 text-[11px] text-neutral-300">
-                        <AlertTriangle className="h-3.5 w-3.5 text-white shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-start gap-2 rounded border border-white/15 bg-black p-2.5 text-[11px] text-neutral-300">
+                        <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-white" />
                         <span>{b}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-[11px] text-neutral-400">[NO_ARCHITECTURAL_ANOMALIES_DETECTED]</p>
+                  <p className="text-[11px] text-neutral-400">✅ No problems detected — your architecture looks solid!</p>
                 )}
               </div>
             </div>
           ) : (
-            <div className="mt-12 text-center text-neutral-500">
-              <p>[SYSTEM_IDLE]</p>
-              <p className="mt-2 text-[11px] text-neutral-600">
-                Click &quot;Run Load Benchmark&quot; to execute simulation dynamics.
+            <div className="mt-12 space-y-3 text-center">
+              <p className="text-4xl">🎯</p>
+              <p className="font-bold text-white">Ready to test your design?</p>
+              <p className="text-[11px] leading-relaxed text-neutral-500">
+                Add some components to the canvas, connect them together, then click <strong className="text-neutral-300">▶ Run Simulation</strong> to see how your system performs under load.
               </p>
             </div>
           )}

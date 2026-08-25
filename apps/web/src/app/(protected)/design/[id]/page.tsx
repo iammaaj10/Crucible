@@ -15,16 +15,12 @@ export default async function DesignProjectPage(props: {
 
   const project = await prisma.project.findUnique({
     where: { id },
+    include: { pullRequests: true },
   });
 
-  if (!project || project.userId !== session.user.id) {
-    notFound();
-  }
+  if (!project || project.userId !== session.user.id) notFound();
 
-  const designGraph = (project.designGraph as unknown as { nodes?: Node[]; edges?: Edge[] }) || {
-    nodes: [],
-    edges: [],
-  };
+  const designGraph = (project.designGraph as unknown as { nodes?: Node[]; edges?: Edge[] }) || { nodes: [], edges: [] };
 
   const simResults = project.simResults as {
     p99Latency: number;
@@ -34,28 +30,35 @@ export default async function DesignProjectPage(props: {
     bottlenecks: string[];
   } | undefined;
 
+  const firstPrId = project.pullRequests?.[0]?.id;
+
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-black text-white">
       <AppHeader
         userName={session.user.name}
         userEmail={session.user.email}
         projectId={project.id}
+        prId={firstPrId}
       />
-      <div className="border-b border-white/10 bg-neutral-950 px-8 py-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-neutral-500 uppercase">Topology Instance:</span>
-          <h1 className="font-mono text-sm font-bold text-white">{project.name}</h1>
-        </div>
-        <div className="flex items-center gap-4 text-[11px] font-mono text-neutral-400">
-          <span>Status: <span className="text-white uppercase">{project.status}</span></span>
+
+      {/* Page Context Banner */}
+      <div className="border-b border-white/10 bg-neutral-950 px-8 py-3">
+        <div className="mx-auto flex max-w-full items-center justify-between gap-4">
+          <div>
+            <p className="text-[11px] text-neutral-500">
+              Exercise 01 — System Design Canvas
+            </p>
+            <h1 className="mt-0.5 text-sm font-bold text-white">{project.name}</h1>
+          </div>
+          <div className="rounded border border-white/10 bg-black px-4 py-2 text-[11px] text-neutral-400">
+            <span className="font-bold text-white">How to use:</span> Add nodes from the toolbar → Wire them by dragging between the dots → Click &ldquo;Run Simulation&rdquo; to test performance.
+          </div>
         </div>
       </div>
+
       <ArchitectureCanvas
         projectId={project.id}
-        initialGraph={{
-          nodes: designGraph.nodes || [],
-          edges: designGraph.edges || [],
-        }}
+        initialGraph={{ nodes: designGraph.nodes || [], edges: designGraph.edges || [] }}
         initialSimResults={simResults}
       />
     </div>

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppHeader } from "@/components/navigation/AppHeader";
 import { DiffViewer } from "@/components/review/DiffViewer";
-import { GitPullRequest, ShieldAlert } from "lucide-react";
+import { GitPullRequest, Bug } from "lucide-react";
 
 export default async function ReviewPage(props: {
   params: Promise<{ id: string }>;
@@ -13,7 +13,6 @@ export default async function ReviewPage(props: {
 
   const { id } = await props.params;
 
-  // Fetch PR by ID or get demo PR
   let pr = null;
   if (id !== "demo") {
     pr = await prisma.pullRequest.findUnique({
@@ -31,8 +30,9 @@ export default async function ReviewPage(props: {
 
   const fallbackPr = pr || {
     id: "demo-pr-1",
-    title: "PR #101: Add distributed token bucket rate limiter to Order Service",
-    description: "Implement local atomic rate limiting with Redis fallback to protect downstream checkout endpoints from request storms.",
+    title: "PR #101: Add a rate limiter to protect the Checkout Service",
+    description:
+      "This code change adds a rate limiter — a system that stops too many people from hitting our checkout server at the same time (like a bouncer at a club). But it has a hidden bug. Your job is to find it.",
     diff: `@@ -14,12 +14,24 @@
  class OrderRateLimiter:
      def __init__(self, redis_client, capacity: int = 100, refill_rate: float = 10.0):
@@ -47,7 +47,9 @@ export default async function ReviewPage(props: {
 -            await self.redis.set(key, tokens - 1)
 -            return True
 -        return False
-+        # Defect: Non-atomic read-then-write creates critical race condition under concurrency
++        # Bug: Reads and writes happen in two separate steps.
++        # If 100 users hit this at the same moment, they ALL read the same count,
++        # ALL think there's a slot available, and ALL get through — the limit is broken.
 +        current_tokens = await self.redis.get(key)
 +        tokens = self.capacity if current_tokens is None else int(current_tokens)
 +        if tokens > 0:
@@ -69,42 +71,61 @@ export default async function ReviewPage(props: {
       />
 
       <main className="mx-auto max-w-6xl px-8 py-10">
-        {/* PR Metadata Header */}
+        {/* Page Header */}
         <div className="mb-8 border-b border-white/10 pb-6">
-          <div className="flex items-center gap-2 font-mono text-xs text-neutral-500 uppercase">
+          <div className="flex items-center gap-2 text-xs text-neutral-500 uppercase">
             <GitPullRequest className="h-4 w-4 text-white" />
-            <span>Pull Request Audit Studio // Status: <span className="text-white">{fallbackPr.status}</span></span>
+            <span>Exercise 02 — Code Review &nbsp;·&nbsp; Status: <span className="text-white">{fallbackPr.status}</span></span>
           </div>
 
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
             {fallbackPr.title}
           </h1>
 
-          <p className="mt-3 text-xs leading-relaxed text-neutral-400 max-w-3xl">
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-neutral-400">
             {fallbackPr.description}
           </p>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center gap-1.5 rounded border border-white/20 bg-neutral-950 px-3 py-1 font-mono text-[11px] text-neutral-300">
-              <ShieldAlert className="h-3.5 w-3.5 text-white" />
-              <span>Inspection Type: Concurrency &amp; Performance Mutation</span>
+          {/* What is a "diff"? */}
+          <div className="mt-4 rounded border border-white/10 bg-neutral-950 p-4">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">
+              What am I looking at?
+            </p>
+            <p className="text-xs leading-relaxed text-neutral-400">
+              The panel below shows a <strong className="text-white">code diff</strong> — a before/after view of the code change.
+              Lines in <span className="bg-red-950/60 text-red-300 px-1 rounded">red</span> were <strong>deleted</strong> from the old code.
+              Lines in <span className="bg-green-950/60 text-green-300 px-1 rounded">green</span> are <strong>new</strong> additions.
+              Look for the bug in the new (green) lines.
+            </p>
+          </div>
+
+          {/* Step-by-step instructions */}
+          <div className="mt-4 grid grid-cols-1 gap-3 border border-white/10 bg-neutral-950 p-4 sm:grid-cols-3">
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/30 text-[10px] font-bold text-white">1</span>
+              <span className="text-xs text-neutral-400">Read through the <strong className="text-white">green lines</strong> (the new code being added).</span>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/30 text-[10px] font-bold text-white">2</span>
+              <span className="text-xs text-neutral-400">
+                <strong className="text-white">Click on a line number</strong> where you think the bug is. Write a comment explaining why it&apos;s a problem.
+              </span>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/30 text-[10px] font-bold text-white">3</span>
+              <span className="text-xs text-neutral-400">
+                Click <strong className="text-white">&ldquo;Request Changes&rdquo;</strong> (you found a bug) or <strong className="text-white">&ldquo;Approve&rdquo;</strong> (no bug found). You&apos;ll get instant feedback.
+              </span>
             </div>
           </div>
 
-          {/* Quick Step Guide for Reviewers */}
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 border border-white/10 bg-neutral-950 p-4 font-mono text-xs text-neutral-400">
-            <div className="flex items-start gap-2">
-              <span className="text-white font-bold">01.</span>
-              <span>Click any line number to attach an inline audit note.</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-white font-bold">02.</span>
-              <span>Identify whether the logic contains non-atomic operations or race conditions.</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-white font-bold">03.</span>
-              <span>Submit &ldquo;Request Changes&rdquo; or &ldquo;Approve&rdquo; to receive instant grading.</span>
-            </div>
+          {/* Hint */}
+          <div className="mt-3 flex items-start gap-2 rounded border border-white/10 bg-neutral-950 px-4 py-2.5 text-xs text-neutral-400">
+            <Bug className="mt-0.5 h-3.5 w-3.5 shrink-0 text-white" />
+            <span>
+              <strong className="text-white">Hint:</strong> Think about what happens when 1,000 users click &quot;Buy Now&quot; at the exact same moment. 
+              Does this code handle that safely?
+            </span>
           </div>
         </div>
 
