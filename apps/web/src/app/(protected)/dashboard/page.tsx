@@ -113,6 +113,24 @@ export default async function DashboardPage() {
       cta: "Start Lesson 3 →",
       href: projects[0] ? `/incidents/${projects[0].id}` : "/incidents/demo",
     },
+    {
+      number: "4",
+      icon: PenTool,
+      title: "Lesson 4: Beating Latency (Caching)",
+      description:
+        "Databases are safe but can be slow. When thousands of users ask for the same data, it crashes. Learn how to use a Redis Cache to speed it up.",
+      cta: "Start Lesson 4 →",
+      href: "/design/new?lessonId=caching",
+    },
+    {
+      number: "5",
+      icon: PenTool,
+      title: "Lesson 5: Background Workers (Queues)",
+      description:
+        "Learn how to use Message Queues to handle heavy tasks without blocking the user. Build a background processing architecture.",
+      cta: "Start Lesson 5 →",
+      href: "/design/new?lessonId=queues",
+    },
   ];
 
   return (
@@ -130,7 +148,7 @@ export default async function DashboardPage() {
             </h1>
             <p className="mt-2 max-w-lg text-sm leading-relaxed text-neutral-400">
               Crucible gives you hands-on experience with real engineering scenarios. 
-              Work through the 3 exercises below — each one teaches a different, critical skill.
+              Work through the 5 exercises below — each one teaches a different, critical skill.
             </p>
           </div>
           <Link
@@ -146,7 +164,7 @@ export default async function DashboardPage() {
           <div className="bg-black p-6">
             <p className="text-xs text-neutral-500">Lessons Completed</p>
             <p className="mt-1 font-mono text-4xl font-bold text-white">
-              0<span className="text-sm font-normal text-neutral-500"> / 3</span>
+              0<span className="text-sm font-normal text-neutral-500"> / 5</span>
             </p>
             <p className="mt-1 text-[11px] text-neutral-500">Keep going!</p>
           </div>

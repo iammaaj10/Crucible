@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { name, constraints, designGraph } = await req.json();
+  const { name, constraints, designGraph, lessonId } = await req.json();
 
   if (!name) {
     return NextResponse.json({ error: "Project name is required" }, { status: 400 });
@@ -34,7 +34,12 @@ export async function POST(req: Request) {
     targetLatency: "< 50ms",
     regions: ["us-east-1", "eu-west-1"],
     monthlyBudget: "$1,200",
+    lessonId: lessonId || "basics"
   };
+  
+  if (lessonId && !defaultConstraints.lessonId) {
+    defaultConstraints.lessonId = lessonId;
+  }
 
   const defaultGraph = designGraph || {
     nodes: [],

@@ -16,6 +16,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import { GatewayNode, ServiceNode, DbNode, CacheNode, QueueNode } from "./CustomNodes";
 import { Play, Save, AlertTriangle, Plus, Activity, RefreshCw } from "lucide-react";
+import { systemDesignLessons } from "@/lib/constants/lessons";
 
 interface SimulationResults {
   p99Latency: number;
@@ -29,12 +30,14 @@ interface ArchitectureCanvasProps {
   projectId: string;
   initialGraph: { nodes: Node[]; edges: Edge[] };
   initialSimResults?: SimulationResults;
+  lessonId?: string;
 }
 
 export function ArchitectureCanvas({
   projectId,
   initialGraph,
   initialSimResults,
+  lessonId = "basics",
 }: ArchitectureCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialGraph?.nodes || []);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialGraph?.edges || []);
@@ -46,31 +49,23 @@ export function ArchitectureCanvas({
   // Teaching/Guided Tour state
   const [lessonStep, setLessonStep] = useState(0);
 
-  const teachingNotes = [
-    { title: "👋 Welcome to Lesson 1", content: "Today you'll learn how a basic website works. See the 'Gateway' node below? That's the front door. Every time you type a URL, your request hits a Gateway." },
-    { title: "🔌 Step 2: The Worker", content: "The Gateway needs someone to do the actual work. Drag a 'Microservice' onto the canvas. A service is like a kitchen worker taking orders." },
-    { title: "🗄️ Step 3: Saving Data", content: "If the worker needs to remember something (like your user account), they need a Database. Drag a 'Database' onto the canvas." },
-    { title: "🔗 Step 4: Connecting them", content: "Now drag the tiny dots on the edge of each box to connect them: Gateway ➔ Service ➔ Database. This shows how data flows." },
-    { title: "🚀 Step 5: Test it!", content: "Click 'Run Simulation'. We will send 5,000 virtual users to your system at the exact same time to see if your architecture survives." },
-    { title: "🎉 Lesson Complete", content: "Look at the results on the right! If your system was too slow, that's called 'Latency'. Adding a Cache can make it faster." }
-  ];
+  const activeLesson = systemDesignLessons[lessonId] || systemDesignLessons["basics"];
+  const teachingNotes = activeLesson.steps;
 
-  // Advance lesson step based on canvas state
+  // Advance lesson step based on canvas state using dynamic completion criteria
   useMemo(() => {
-    if (simResults) {
-      setLessonStep(5);
-    } else if (edges.length >= 2) {
-      setLessonStep(4);
-    } else if (nodes.length >= 3) {
-      setLessonStep(3);
-    } else if (nodes.length >= 2) {
-      setLessonStep(2);
-    } else if (nodes.length >= 1) {
-      setLessonStep(1);
-    } else {
-      setLessonStep(0);
+    let currentStep = 0;
+    for (let i = 0; i < teachingNotes.length; i++) {
+      const step = teachingNotes[i];
+      if (step.checkCompletion && step.checkCompletion(nodes, edges, simResults)) {
+        currentStep = i + 1; // Advance to next step if condition met
+      } else if (step.checkCompletion) {
+        break; // Stop at the first uncompleted step
+      }
     }
-  }, [nodes.length, edges.length, simResults]);
+    // Cap at the last step
+    setLessonStep(Math.min(currentStep, teachingNotes.length - 1));
+  }, [nodes, edges, simResults, teachingNotes]);
 
   const nodeTypes = useMemo(
     () => ({

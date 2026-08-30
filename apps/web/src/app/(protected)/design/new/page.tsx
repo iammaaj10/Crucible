@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppHeader } from "@/components/navigation/AppHeader";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { projectTemplates } from "@/lib/constants/templates";
 import type { ProjectTemplate } from "@/lib/types";
 
 export default function NewProjectPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <NewProjectContent />
+    </Suspense>
+  );
+}
+
+function NewProjectContent() {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const searchParams = useSearchParams();
+  const lessonId = searchParams.get("lessonId") || undefined;
+  
+  const [name, setName] = useState(lessonId ? `Lesson: ${lessonId}` : "");
   const [throughput, setThroughput] = useState("5000 req/sec");
   const [targetLatency, setTargetLatency] = useState("< 50ms");
   const [monthlyBudget, setMonthlyBudget] = useState("$1,500");
@@ -35,6 +46,7 @@ export default function NewProjectPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
+          lessonId,
           constraints: {
             throughput,
             targetLatency,

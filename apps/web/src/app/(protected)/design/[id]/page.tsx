@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppHeader } from "@/components/navigation/AppHeader";
 import { ArchitectureCanvas } from "@/components/canvas/ArchitectureCanvas";
+import { systemDesignLessons } from "@/lib/constants/lessons";
 import { Node, Edge } from "reactflow";
 
 export default async function DesignProjectPage(props: {
@@ -31,6 +32,8 @@ export default async function DesignProjectPage(props: {
   } | undefined;
 
   const firstPrId = project.pullRequests?.[0]?.id;
+  const lessonId = (project.constraints as any)?.lessonId || "basics";
+  const activeLesson = systemDesignLessons[lessonId] || systemDesignLessons["basics"];
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -45,8 +48,8 @@ export default async function DesignProjectPage(props: {
       <div className="border-b border-white/10 bg-neutral-950 px-8 py-3">
         <div className="mx-auto flex max-w-full items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] text-neutral-500">
-              Exercise 01 — System Design Canvas
+            <p className="text-[11px] text-neutral-500 uppercase tracking-widest">
+              {activeLesson.title}
             </p>
             <h1 className="mt-0.5 text-sm font-bold text-white">{project.name}</h1>
           </div>
@@ -60,6 +63,7 @@ export default async function DesignProjectPage(props: {
         projectId={project.id}
         initialGraph={{ nodes: designGraph.nodes || [], edges: designGraph.edges || [] }}
         initialSimResults={simResults}
+        lessonId={lessonId}
       />
     </div>
   );
