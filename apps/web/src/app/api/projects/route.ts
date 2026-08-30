@@ -37,17 +37,8 @@ export async function POST(req: Request) {
   };
 
   const defaultGraph = designGraph || {
-    nodes: [
-      { id: "gateway-1", type: "gatewayNode", position: { x: 100, y: 200 }, data: { label: "API Gateway", rps: 5000 } },
-      { id: "service-1", type: "serviceNode", position: { x: 380, y: 200 }, data: { label: "Auth & Order Service", instances: 4 } },
-      { id: "db-1", type: "dbNode", position: { x: 680, y: 150 }, data: { label: "Primary PostgreSQL", replica: true } },
-      { id: "cache-1", type: "cacheNode", position: { x: 680, y: 280 }, data: { label: "Redis Cluster", memory: "16GB" } },
-    ],
-    edges: [
-      { id: "e1-2", source: "gateway-1", target: "service-1", animated: true, style: { stroke: "#ffffff" } },
-      { id: "e2-3", source: "service-1", target: "db-1", animated: false, style: { stroke: "#71717a" } },
-      { id: "e2-4", source: "service-1", target: "cache-1", animated: true, style: { stroke: "#ffffff" } },
-    ],
+    nodes: [],
+    edges: [],
   };
 
   const project = await prisma.project.create({
@@ -57,13 +48,6 @@ export async function POST(req: Request) {
       constraints: defaultConstraints,
       designGraph: defaultGraph,
       status: "designing",
-      simResults: {
-        p99Latency: 42,
-        throughputAchieved: 4950,
-        errorRate: "0.02%",
-        estimatedCost: "$840/mo",
-        bottlenecks: [],
-      },
     },
   });
 
@@ -71,8 +55,8 @@ export async function POST(req: Request) {
   await prisma.pullRequest.create({
     data: {
       projectId: project.id,
-      title: "PR #101: Add distributed token bucket rate limiter to Order Service",
-      description: "Implement local atomic rate limiting with Redis fallback to protect downstream checkout endpoints from request storms.",
+      title: "Lesson 2: The Race Condition Bug",
+      description: "You don't need to write any code here! Below is an example of code written by another engineer. It has a sneaky bug. Read the green lines and click 'Explain this to me' to see how it breaks.",
       diff: `@@ -14,12 +14,24 @@
  class OrderRateLimiter:
      def __init__(self, redis_client, capacity: int = 100, refill_rate: float = 10.0):

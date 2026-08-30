@@ -43,6 +43,35 @@ export function ArchitectureCanvas({
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
 
+  // Teaching/Guided Tour state
+  const [lessonStep, setLessonStep] = useState(0);
+
+  const teachingNotes = [
+    { title: "👋 Welcome to Lesson 1", content: "Today you'll learn how a basic website works. See the 'Gateway' node below? That's the front door. Every time you type a URL, your request hits a Gateway." },
+    { title: "🔌 Step 2: The Worker", content: "The Gateway needs someone to do the actual work. Drag a 'Microservice' onto the canvas. A service is like a kitchen worker taking orders." },
+    { title: "🗄️ Step 3: Saving Data", content: "If the worker needs to remember something (like your user account), they need a Database. Drag a 'Database' onto the canvas." },
+    { title: "🔗 Step 4: Connecting them", content: "Now drag the tiny dots on the edge of each box to connect them: Gateway ➔ Service ➔ Database. This shows how data flows." },
+    { title: "🚀 Step 5: Test it!", content: "Click 'Run Simulation'. We will send 5,000 virtual users to your system at the exact same time to see if your architecture survives." },
+    { title: "🎉 Lesson Complete", content: "Look at the results on the right! If your system was too slow, that's called 'Latency'. Adding a Cache can make it faster." }
+  ];
+
+  // Advance lesson step based on canvas state
+  useMemo(() => {
+    if (simResults) {
+      setLessonStep(5);
+    } else if (edges.length >= 2) {
+      setLessonStep(4);
+    } else if (nodes.length >= 3) {
+      setLessonStep(3);
+    } else if (nodes.length >= 2) {
+      setLessonStep(2);
+    } else if (nodes.length >= 1) {
+      setLessonStep(1);
+    } else {
+      setLessonStep(0);
+    }
+  }, [nodes.length, edges.length, simResults]);
+
   const nodeTypes = useMemo(
     () => ({
       gatewayNode: GatewayNode,
@@ -189,12 +218,29 @@ export function ArchitectureCanvas({
         </div>
       </div>
 
-      {/* Main Canvas & Metrics Split */}
+        {/* Main Canvas & Metrics Split */}
       <div className="relative flex flex-1 overflow-hidden">
         <div className="relative flex-1 bg-black">
-          {/* Quick tip for new users */}
-          <div className="absolute top-4 left-4 z-10 rounded border border-white/15 bg-black/80 px-4 py-2.5 text-[11px] text-neutral-300 backdrop-blur pointer-events-none shadow-lg">
-            <span className="font-bold text-white">💡 Quick Tip:</span> Drag the <span className="text-white">small dots</span> on the edge of any node to connect it to another → then click <span className="text-white">▶ Run Simulation</span> to see how it performs.
+          {/* Guided Teaching Note (Floating) */}
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 w-96 rounded-lg border border-white/20 bg-black/95 p-5 shadow-2xl backdrop-blur-md transition-all">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                Teaching Note {lessonStep + 1} of {teachingNotes.length}
+              </span>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[10px] text-white">
+                💡
+              </span>
+            </div>
+            <h3 className="mb-2 text-base font-bold text-white">{teachingNotes[lessonStep]?.title}</h3>
+            <p className="text-sm leading-relaxed text-neutral-300">
+              {teachingNotes[lessonStep]?.content}
+            </p>
+            {/* Progress bar */}
+            <div className="mt-4 flex gap-1">
+              {teachingNotes.map((_, idx) => (
+                <div key={idx} className={`h-1 flex-1 rounded-full ${idx <= lessonStep ? 'bg-white' : 'bg-white/20'}`} />
+              ))}
+            </div>
           </div>
 
           <ReactFlow

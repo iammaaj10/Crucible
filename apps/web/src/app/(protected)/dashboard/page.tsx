@@ -38,26 +38,10 @@ export default async function DashboardPage() {
           monthlyBudget: "$1,200",
         },
         designGraph: {
-          nodes: [
-            { id: "gateway-1", type: "gatewayNode", position: { x: 80, y: 180 }, data: { label: "API Gateway (Rate Limiter)", rps: 5000 } },
-            { id: "service-1", type: "serviceNode", position: { x: 350, y: 180 }, data: { label: "Order & Checkout Service", instances: 4 } },
-            { id: "db-1", type: "dbNode", position: { x: 650, y: 120 }, data: { label: "PostgreSQL Database", replica: true } },
-            { id: "cache-1", type: "cacheNode", position: { x: 650, y: 260 }, data: { label: "Redis Cache (Speed Layer)", memory: "16GB" } },
-          ],
-          edges: [
-            { id: "e1-2", source: "gateway-1", target: "service-1", animated: true, style: { stroke: "#ffffff", strokeWidth: 2 } },
-            { id: "e2-3", source: "service-1", target: "db-1", animated: false, style: { stroke: "#71717a", strokeWidth: 1.5 } },
-            { id: "e2-4", source: "service-1", target: "cache-1", animated: true, style: { stroke: "#ffffff", strokeWidth: 2 } },
-          ],
+          nodes: [],
+          edges: [],
         },
         status: "active",
-        simResults: {
-          p99Latency: 38,
-          throughputAchieved: 4950,
-          errorRate: "0.01%",
-          estimatedCost: "$780/mo",
-          bottlenecks: [],
-        },
         pullRequests: {
           create: {
             title: "PR #101: Add rate limiter to protect the checkout service",
@@ -103,30 +87,30 @@ export default async function DashboardPage() {
 
   const steps = [
     {
-      number: "01",
+      number: "1",
       icon: PenTool,
-      title: "Design a Cloud System",
+      title: "Lesson 1: How the Internet Works (Gateway & Services)",
       description:
-        "Think of it like drawing how an app (like Zomato or Flipkart) works. You add servers, databases, and caches. Then you simulate 5,000 users hitting it at once to see if it holds up.",
-      cta: "Open Design Canvas →",
+        "Learn the basics of system architecture. You'll build a simple system, run a simulation, and watch data packets flow through your servers.",
+      cta: "Start Lesson 1 →",
       href: projects[0] ? `/design/${projects[0].id}` : "/design/new",
     },
     {
-      number: "02",
+      number: "2",
       icon: GitPullRequest,
-      title: "Review Code & Find Bugs",
+      title: "Lesson 2: Catching Sneaky Code Bugs (Race Conditions)",
       description:
-        "Engineers send code changes to each other for review before shipping. You'll look at a real code change that has a sneaky bug hidden in it. Your job: find and annotate it.",
-      cta: "Open Code Review →",
+        "Not all bugs throw errors. Learn about 'Race Conditions' by stepping through the code visually and watching two users collide.",
+      cta: "Start Lesson 2 →",
       href: projects[0]?.pullRequests?.[0] ? `/review/${projects[0].pullRequests[0].id}` : "/review/demo",
     },
     {
-      number: "03",
+      number: "3",
       icon: AlertTriangle,
-      title: "Respond to a Live Outage",
+      title: "Lesson 3: Fixing Live Outages (When Things Break)",
       description:
-        "Your app just crashed in production. Users can't check out. Error logs are streaming in. You need to figure out what went wrong and fix it — fast. This is what real on-call engineers do.",
-      cta: "Enter War Room →",
+        "What happens when your servers crash in production? Learn how to read logs and mitigate a live outage just like a real on-call engineer.",
+      cta: "Start Lesson 3 →",
       href: projects[0] ? `/incidents/${projects[0].id}` : "/incidents/demo",
     },
   ];
@@ -160,18 +144,18 @@ export default async function DashboardPage() {
         {/* Score Cards */}
         <div className="mb-10 grid grid-cols-1 gap-px border border-white/10 bg-white/10 sm:grid-cols-3">
           <div className="bg-black p-6">
-            <p className="text-xs text-neutral-500">System Design Score</p>
+            <p className="text-xs text-neutral-500">Lessons Completed</p>
             <p className="mt-1 font-mono text-4xl font-bold text-white">
-              {skillProfile?.designScore ?? 75}<span className="text-sm font-normal text-neutral-500"> / 100</span>
+              0<span className="text-sm font-normal text-neutral-500"> / 3</span>
             </p>
-            <p className="mt-1 text-[11px] text-neutral-500">How good your cloud designs are</p>
+            <p className="mt-1 text-[11px] text-neutral-500">Keep going!</p>
           </div>
           <div className="bg-black p-6">
-            <p className="text-xs text-neutral-500">Code Review Score</p>
+            <p className="text-xs text-neutral-500">Current Streak</p>
             <p className="mt-1 font-mono text-4xl font-bold text-white">
-              {skillProfile?.reviewScore ?? 80}<span className="text-sm font-normal text-neutral-500"> / 100</span>
+              1<span className="text-sm font-normal text-neutral-500"> Day</span>
             </p>
-            <p className="mt-1 text-[11px] text-neutral-500">How accurately you catch bugs</p>
+            <p className="mt-1 text-[11px] text-neutral-500">Log in tomorrow to keep it going</p>
           </div>
           <div className="bg-black p-6">
             <p className="text-xs text-neutral-500">Active Projects</p>
@@ -185,7 +169,7 @@ export default async function DashboardPage() {
         {/* The 3 Core Exercises */}
         <div className="mb-4 flex items-center gap-2">
           <BookOpen className="h-4 w-4 text-neutral-400" />
-          <h2 className="text-xs uppercase tracking-widest text-neutral-400">Your 3 Practice Exercises</h2>
+          <h2 className="text-xs uppercase tracking-widest text-neutral-400">Your Learning Path</h2>
         </div>
 
         <div className="space-y-3">
@@ -200,7 +184,7 @@ export default async function DashboardPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-[10px] uppercase text-neutral-500">Exercise {step.number}</span>
+                        <span className="font-mono text-[10px] uppercase text-neutral-500">Lesson {step.number}</span>
                       </div>
                       <h3 className="mt-0.5 text-base font-bold text-white">{step.title}</h3>
                       <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-neutral-400">{step.description}</p>

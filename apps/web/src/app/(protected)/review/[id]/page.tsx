@@ -30,9 +30,9 @@ export default async function ReviewPage(props: {
 
   const fallbackPr = pr || {
     id: "demo-pr-1",
-    title: "PR #101: Add a rate limiter to protect the Checkout Service",
+    title: "Lesson 2: The Race Condition Bug",
     description:
-      "This code change adds a rate limiter — a system that stops too many people from hitting our checkout server at the same time (like a bouncer at a club). But it has a hidden bug. Your job is to find it.",
+      "You don't need to write any code here! Below is an example of code written by another engineer. It has a sneaky bug. Read the green lines and click 'Explain this to me' to see how it breaks.",
     diff: `@@ -14,12 +14,24 @@
  class OrderRateLimiter:
      def __init__(self, redis_client, capacity: int = 100, refill_rate: float = 10.0):
@@ -75,7 +75,7 @@ export default async function ReviewPage(props: {
         <div className="mb-8 border-b border-white/10 pb-6">
           <div className="flex items-center gap-2 text-xs text-neutral-500 uppercase">
             <GitPullRequest className="h-4 w-4 text-white" />
-            <span>Exercise 02 — Code Review &nbsp;·&nbsp; Status: <span className="text-white">{fallbackPr.status}</span></span>
+            <span>Lesson 02 — Code Review &nbsp;·&nbsp; Status: <span className="text-white">{fallbackPr.status}</span></span>
           </div>
 
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
@@ -93,31 +93,13 @@ export default async function ReviewPage(props: {
             </p>
             <p className="text-xs leading-relaxed text-neutral-400">
               The panel below shows a <strong className="text-white">code diff</strong> — a before/after view of the code change.
-              Lines in <span className="bg-red-950/60 text-red-300 px-1 rounded">red</span> were <strong>deleted</strong> from the old code.
-              Lines in <span className="bg-green-950/60 text-green-300 px-1 rounded">green</span> are <strong>new</strong> additions.
-              Look for the bug in the new (green) lines.
+              Lines in <span className="bg-red-950/30 text-red-300 px-1 rounded">red</span> were <strong>deleted</strong> from the old code.
+              Lines in <span className="bg-green-950/30 text-green-300 px-1 rounded">green</span> are <strong>new</strong> additions.
+              Click <strong className="text-white">"Explain this to me"</strong> below to see how this bug works.
             </p>
           </div>
 
-          {/* Step-by-step instructions */}
-          <div className="mt-4 grid grid-cols-1 gap-3 border border-white/10 bg-neutral-950 p-4 sm:grid-cols-3">
-            <div className="flex items-start gap-2.5">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/30 text-[10px] font-bold text-white">1</span>
-              <span className="text-xs text-neutral-400">Read through the <strong className="text-white">green lines</strong> (the new code being added).</span>
-            </div>
-            <div className="flex items-start gap-2.5">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/30 text-[10px] font-bold text-white">2</span>
-              <span className="text-xs text-neutral-400">
-                <strong className="text-white">Click on a line number</strong> where you think the bug is. Write a comment explaining why it&apos;s a problem.
-              </span>
-            </div>
-            <div className="flex items-start gap-2.5">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/30 text-[10px] font-bold text-white">3</span>
-              <span className="text-xs text-neutral-400">
-                Click <strong className="text-white">&ldquo;Request Changes&rdquo;</strong> (you found a bug) or <strong className="text-white">&ldquo;Approve&rdquo;</strong> (no bug found). You&apos;ll get instant feedback.
-              </span>
-            </div>
-          </div>
+
 
           {/* Hint */}
           <div className="mt-3 flex items-start gap-2 rounded border border-white/10 bg-neutral-950 px-4 py-2.5 text-xs text-neutral-400">
